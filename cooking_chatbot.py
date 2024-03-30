@@ -11,24 +11,22 @@ class CookingChatbot:
             "default": "I'm sorry, I'm not sure how to respond to that."
         }
     
-    def generate_response(self, user_input):
-        # Tokenize user input and analyze it using spaCy
-        doc = self.nlp(user_input)
-        
-        # Determine the user's intent based on spaCy's analysis
-        intent = None
+    def analyze_text(self, text):
+        doc = self.nlp(text.lower())
+        return doc
+    
+    def classify_intent(self, doc):
         for token in doc:
-            if token.text.lower() == "recipe":
-                intent = "recipe"
-                break
-            elif token.text.lower() == "ingredients":
-                intent = "ingredients"
-                break
-        
-        # Generate a random greeting
+            if token.text == "recipe":
+                return "recipe"
+            elif token.text == "ingredients":
+                return "ingredients"
+        return "default"
+    
+    def generate_response(self, user_input):
+        doc = self.analyze_text(user_input)
+        intent = self.classify_intent(doc)
         greeting = random.choice(self.greetings)
-        
-        # Generate a response based on the detected intent
         if intent in self.responses:
             return f"{greeting} {self.responses[intent]}"
         else:
